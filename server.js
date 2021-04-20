@@ -1,5 +1,5 @@
 const express = require('express');
-const {ApolloServer} = require('apollo-server-express');
+const {ApolloServer, gql} = require('apollo-server-express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
@@ -11,6 +11,27 @@ app.use(express.json());
 
 app.use(cors());
 
+const typeDefs = gql`
+
+    type Query{
+
+        greetings: String
+        
+    }
+
+`;
+
+const resolvers = {};
+
+
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers
+});
+
+
+apolloServer.applyMiddleware({app, path: '/graphql'});
+
 const PORT = process.env.PORT || 4007;
 
 app.use('/',(req,res,next)=>{
@@ -19,4 +40,5 @@ app.use('/',(req,res,next)=>{
 
 app.listen(PORT, ()=>{
     console.log(`The server is listening on port ${PORT}`);
+    console.log( 'The graphql path is /graphql');
 })
