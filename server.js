@@ -2,6 +2,7 @@ const express = require('express');
 const {ApolloServer, gql} = require('apollo-server-express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const {tasks, users} = require('./constants/index');
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ const typeDefs = gql`
     type Query{
 
         greetings: String
+        tasks: [Task!]
         
     }
 
@@ -36,7 +38,18 @@ const typeDefs = gql`
 
 `;
 
-const resolvers = {};
+const resolvers = {
+    Query: {
+        greetings: ()=>"Hello World!",
+        tasks: ()=> tasks
+    },
+// Individual field Resolver
+    Task:{
+
+        user: (parent)=> { return users.find(user => user.id === parent.userId)}
+
+    }
+};
 
 
 const apolloServer = new ApolloServer({
