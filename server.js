@@ -3,6 +3,7 @@ const {ApolloServer, gql} = require('apollo-server-express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const {tasks, users} = require('./constants/index');
+const {v4} = require('uuid');
 
 dotenv.config();
 
@@ -18,6 +19,21 @@ const typeDefs = gql`
 
         greetings: String
         tasks: [Task!]
+        task(id:ID!): Task
+        users: [User!]
+        user(id:ID!): User
+        
+    }
+
+    input createTaskInput {
+        name: String!
+        completed: Boolean!
+        userId: ID!
+        
+    }
+
+    type Mutation {
+        createTask(input:createTaskInput!):Task
         
     }
 
@@ -41,13 +57,39 @@ const typeDefs = gql`
 const resolvers = {
     Query: {
         greetings: ()=>"Hello World!",
-        tasks: ()=> tasks
+        tasks: ()=> tasks,
+        task: (parent,args)=> tasks.find((task)=> task.id === args.id),
+        users: ()=> users,
+        user:(parent,args) => users.find((user)=> user.id===args.id)
+    },
+
+    Mutation:{
+        createTask: (parent,{input})=>{
+
+            let idV4 = v4();
+
+            console.log(`The generatedId is ${idV4}`);
+            const task = {...input, id:idV4};
+
+            tasks.push(task);
+
+            console.log(`The task array is ${tasks}`)
+
+            return task;
+
+
+
+        }
+
     },
 // Individual field Resolver
     Task:{
 
         user: (parent)=> { return users.find(user => user.id === parent.userId)}
 
+    },
+    User: {
+        tasks: (parent)=> {return tasks.filter((task)=> task.userId === parent.id)}
     }
 };
 
