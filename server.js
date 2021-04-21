@@ -6,6 +6,8 @@ const {tasks, users} = require('./constants/index');
 
 const resolvers = require('./resolvers');
 
+const typeDefs = require('./typeDefs');
+
 dotenv.config();
 
 const app = express();
@@ -13,54 +15,6 @@ const app = express();
 app.use(express.json());
 
 app.use(cors());
-
-const typeDefs = gql`
-
-    type Query{
-
-        greetings: String
-        tasks: [Task!]
-        task(id:ID!): Task
-        users: [User!]
-        user(id:ID!): User
-        
-    }
-
-    input createTaskInput {
-        name: String!
-        completed: Boolean!
-        userId: ID!
-        
-    }
-
-    input createUserInput {
-        name: String!
-        email: String!
-        tasks: [ID!]
-        
-    }
-
-    type Mutation {
-        createTask(input:createTaskInput!):Task
-        createUser(input: createUserInput!): User
-        
-    }
-
-    type User{
-       id: ID!
-       name:String!
-       email:String!
-       tasks: [Task!] 
-    }
-
-    type Task{
-        id:ID!
-        name: String!
-        completed: Boolean!
-        user: User!
-    }
-
-`;
 
 
 
