@@ -4,6 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const {tasks, users} = require('./constants/index');
 
+const {connection} = require('./database/utils');
+
 const resolvers = require('./resolvers');
 
 const typeDefs = require('./typeDefs');
@@ -16,6 +18,7 @@ app.use(express.json());
 
 app.use(cors());
 
+connection();
 
 
 
