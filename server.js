@@ -20,8 +20,6 @@ app.use(cors());
 
 connection();
 
-
-
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers
