@@ -1,7 +1,11 @@
-const {users, tasks} = require('../constants');
+
 const {v4} = require('uuid');
-const User = require('../database/models/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const User = require('../database/models/user');
+const {users, tasks} = require('../constants');
+const user = require('../database/models/user');
 
 
 module.exports= {
@@ -61,6 +65,43 @@ module.exports= {
           
             return result;
 
+        },
+
+        login: async (_,{input})=>{
+
+            // Steps 
+            // 1) Check if user's email exists inside the database
+            try{
+                const retrievedUser = await User.findOne({email: input.email});
+                if(!retrievedUser){
+                    console.log("Could not find the user with email ", input.email);
+                    throw new Error("Could not find the User with given email");
+                }
+
+                     // 2) get user then check the password if its correct 
+            
+                const isPasswordValid = await bcrypt.compare(input.password, retrievedUser.password);
+                if(!isPasswordValid){
+                    throw new Error('Provided password didnt matched');
+                }
+
+                const secret = process.env.JWT_SEC_KEY || 'mysecretKey';
+
+                const token = jwt.sign({email:retrievedUser.email},secret,{expiresIn:'10h'})
+
+                return {token};
+            
+
+
+            }catch(error){
+
+                console.log("Error in retrieving User");
+                throw error;
+            }
+          
+       
+            
+            
         }
 
     },

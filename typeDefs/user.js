@@ -27,9 +27,22 @@ module.exports = gql`
         
     }
 
+    input loginInput {
+
+        email: String!
+        password: String!
+
+    }
+   
+
     extend type Mutation {
          createUser(input: createUserInput!): User
          signup(input: signupInput!): User
+         login(input: loginInput!):Token
+    }
+
+    type Token {
+        token:String!
     }
 
     type User{
