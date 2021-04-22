@@ -1,5 +1,7 @@
 const {users, tasks} = require('../constants');
 const {v4} = require('uuid');
+const User = require('../database/models/user');
+const bcrypt = require('bcryptjs');
 
 
 module.exports= {
@@ -24,13 +26,49 @@ module.exports= {
 
 
 
+        },
+
+        signup: async (parent,{input})=>{
+
+            let result;
+
+            try{
+
+              const retrievedUser =  await User.findOne({email: input.email});
+
+              if(retrievedUser){
+
+                throw new Error('Email already in use!');
+
+              }
+
+              // if not duplicate 
+
+              const hashedPassword = await bcrypt.hash(input.password,12);
+
+              const newUser = new User({...input,password:hashedPassword});
+
+               result = await newUser.save();
+              
+
+
+            }catch(err){
+
+                console.log('Error occured in findOne ', err);
+                throw err;
+            }
+           
+          
+            return result;
+
         }
 
     },
 
     // Users contain tasks field resolver for User 
     User: {
-        tasks: (parent)=> {return tasks.filter((task)=> task.userId === parent.id)}
+        tasks: (parent)=> {return tasks.filter((task)=> task.userId === parent.id)},
+        createdAt: ()=> "2021-04-22T09:00:30.512+00:00"
     }
 };
 
