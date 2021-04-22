@@ -67,8 +67,7 @@ module.exports= {
 
     // Users contain tasks field resolver for User 
     User: {
-        tasks: (parent)=> {return tasks.filter((task)=> task.userId === parent.id)},
-        createdAt: ()=> "2021-04-22T09:00:30.512+00:00"
+        tasks: (parent)=> {return tasks.filter((task)=> task.userId === parent.id)}
     }
 };
 

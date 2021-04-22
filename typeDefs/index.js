@@ -8,6 +8,8 @@ const userSchema = require('./user');
 
 const typeDefs = gql`
 
+    scalar Date
+
     type Query{
 
         dummy:String
