@@ -10,6 +10,8 @@ const resolvers = require('./resolvers');
 
 const typeDefs = require('./typeDefs');
 
+const {verifyUser} = require('./helper/context');
+
 dotenv.config();
 
 const app = express();
@@ -22,7 +24,15 @@ connection();
 
 const apolloServer = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context: async ({req})=> {
+
+        await verifyUser(req);
+   //     console.log(`The context run every time!`);
+       return {
+           email: req.email
+        } 
+    }
 });
 
 

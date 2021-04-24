@@ -21,9 +21,9 @@ module.exports.verifyUser = async (req)=>{
     
         }
 
-        if(!req.email){
+       /* if(!req.email){
             throw new Error('Please pass a valid token (Token is missing or invalid)');
-        }
+        }*/
     
     } catch (error) {
 

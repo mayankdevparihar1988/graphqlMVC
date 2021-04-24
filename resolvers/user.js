@@ -3,15 +3,21 @@ const {v4} = require('uuid');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const {combineResolvers} = require('graphql-resolvers');
 const User = require('../database/models/user');
 const {users, tasks} = require('../constants');
 const user = require('../database/models/user');
+const  {isAuthenticated} = require('./middleware');
+
 
 
 module.exports= {
     Query: {
         users: ()=> users,
-        user:(parent,args) => users.find((user)=> user.id===args.id)
+        user:combineResolvers(isAuthenticated,(parent,args, context) =>{
+            console.log('The value retrieved from context is ', context.email);
+            return users.find((user)=> user.id===args.id)
+        })
     },
 
     Mutation:{
