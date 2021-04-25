@@ -1,6 +1,8 @@
-
-const {users, tasks} = require('../constants');
 const {v4} = require('uuid');
+const User = require('../database/models/user');
+const Task = require('../database/models/task');
+
+
 
 module.exports  = {
     Query: {
@@ -11,29 +13,44 @@ module.exports  = {
     },
 
     Mutation:{
-        createTask: (parent,{input})=>{
+        createTask: async (parent,{input}, {email}) =>{
 
-            let idV4 = v4();
+            try {
+           
+                console.log('User email id ', email);
+                const retrievedUser = await User.findOne({email});
+                console.log("retrievedUser -- ", retrievedUser);
+                if(!retrievedUser){
+                    console.log("User not found! Please Login!!");
+                    throw new Error("Please login or user not found!");
+                   }
+    
+                   const createdTask = new Task({...input, user:retrievedUser.id});
+    
+                   const result = await createdTask.save();
+    
+                   // pushing the task to the user 
+                   retrievedUser.tasks.push(result.id);
+    
+                   await retrievedUser.save();
+    
+                   return result;
+    
+            } catch (error) {
 
-            console.log(`The generatedId is ${idV4}`);
-            const task = {...input, id:idV4};
-
-            tasks.push(task);
-
-            console.log(`The task array is ${tasks}`)
-
-            return task;
-
+                console.log(error);
+                throw error;
+                
+            }    
 
 
         }
-
-    },
+        
+        },
 // Individual field Resolver for task (Task contains user)
     Task:{
 
-        user: (parent)=> { return users.find(user => user.id === parent.userId)}
-
+        user: async (parent)=> { return await user.findOne(parent.user.id); }
     }
 };
 

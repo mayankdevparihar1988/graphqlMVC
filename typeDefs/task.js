@@ -12,9 +12,7 @@ extend type Query{
 
 input createTaskInput {
     name: String!
-    completed: Boolean!
-    userId: ID!
-    
+    completed: Boolean!      
 }
 
 
