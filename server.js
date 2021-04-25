@@ -30,7 +30,8 @@ const apolloServer = new ApolloServer({
         await verifyUser(req);
    //     console.log(`The context run every time!`);
        return {
-           email: req.email
+           email: req.email,
+           loggedInUserId: req.loggedInUserId
         } 
     }
 });

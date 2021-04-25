@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../../database/models/user');
 
 module.exports.verifyUser = async (req)=>{
 
@@ -6,6 +7,7 @@ module.exports.verifyUser = async (req)=>{
     try {
 
         req.email = null;
+        req.loggedInUserId= null;
         
        // console.log(`The request obj is ${req.headers}`, req.headers);
 
@@ -17,6 +19,9 @@ module.exports.verifyUser = async (req)=>{
             console.log(`The token is `, token);
             const payload= jwt.verify(token, process.env.JWT_SEC_KEY);
             req.email = payload.email;
+            const retrievedUser = await User.findOne({email: payload.email});
+            req.loggedInUserId = retrievedUser.id;
+
     
     
         }
