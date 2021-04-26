@@ -4,16 +4,42 @@ const Task = require("../database/models/task");
 const { isAuthenticated, isTaskOwner } = require("../resolvers/middleware");
 const { combineResolvers } = require("graphql-resolvers");
 const user = require("../database/models/user");
+const task = require("../typeDefs/task");
+const { encodeBase64 } = require("bcryptjs");
+const {base64ToString,stringToBase64} = require('../helper');
 
 module.exports = {
   Query: {
     tasks: combineResolvers(
       isAuthenticated,
-      async (_, {skip=0, limit=10}, { loggedInUserId }) => {
+      async (_, {cursor, limit=10}, { loggedInUserId }) => {
         try {
             console.log('The loggedInUserId comming from context is ', loggedInUserId);
-          const tasks = await Task.find({ user: loggedInUserId }).sort({_id:-1}).skip(skip).limit(limit);
-          return tasks;
+            const query = { user: loggedInUserId };
+            if(cursor){
+              // Cursor works best with indexed property as it is faster to retrieved indexed values
+              query['_id']= {
+                '$lt':base64ToString(cursor)
+              }
+            }
+          // To check if next page available we fetch one more record the provide limit
+          let tasks = await Task.find(query).sort({_id:-1}).limit(limit +1);
+
+          const hasNextPage = tasks.length> limit;
+
+          if(hasNextPage){
+            tasks = tasks.slice(0,-1);
+          }
+
+
+
+          return {
+            taskFeed: tasks,
+            pageInfo: {
+              nextPageCursor: hasNextPage? stringToBase64(tasks[tasks.length -1 ]._id): null,
+              hasNextPage
+            }
+          };
         } catch (error) {
           console.log(error);
           throw error;

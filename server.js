@@ -2,7 +2,6 @@ const express = require('express');
 const {ApolloServer, gql} = require('apollo-server-express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const {tasks, users} = require('./constants/index');
 
 const {connection} = require('./database/utils');
 
