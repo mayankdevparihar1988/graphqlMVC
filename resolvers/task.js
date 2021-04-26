@@ -8,9 +8,9 @@ module.exports = {
   Query: {
     tasks: combineResolvers(
       isAuthenticated,
-      isTaskOwner,
       async (_, __, { loggedInUserId }) => {
         try {
+            console.log('The loggedInUserId comming from context is ', loggedInUserId);
           const tasks = await Task.find({ user: loggedInUserId });
           return tasks;
         } catch (error) {
