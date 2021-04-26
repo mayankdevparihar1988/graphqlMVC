@@ -7,7 +7,7 @@ const user = require("../database/models/user");
 const task = require("../typeDefs/task");
 const { encodeBase64 } = require("bcryptjs");
 const {base64ToString,stringToBase64} = require('../helper');
-
+//TODO Fix the limit issue currently not working
 module.exports = {
   Query: {
     tasks: combineResolvers(
@@ -31,12 +31,13 @@ module.exports = {
             tasks = tasks.slice(0,-1);
           }
 
-
+          console.log('The last task id is ', );
+          const lastTaskId = tasks[tasks.length- 1]._id;
 
           return {
             taskFeed: tasks,
             pageInfo: {
-              nextPageCursor: hasNextPage? stringToBase64(tasks[tasks.length -1 ]._id): null,
+              nextPageCursor: hasNextPage? stringToBase64(lastTaskId): null,
               hasNextPage
             }
           };
@@ -125,7 +126,7 @@ module.exports = {
     user: async (parent) => {
 
         console.log('The retrived User Id for task', parent.user)
-      return await User.findById(parent.user );
+      return await User.findById(parent.user);
     },
   },
 };
