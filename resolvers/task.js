@@ -32,7 +32,7 @@ module.exports = {
           }
 
           console.log('The last task id is ', );
-          const lastTaskId = tasks[tasks.length- 1]._id;
+          const lastTaskId = tasks[tasks.length- 1].id;
 
           return {
             taskFeed: tasks,
