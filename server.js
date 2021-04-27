@@ -24,14 +24,20 @@ connection();
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    context: async ({req})=> {
+    context: async ({req, connection})=> {
 
-        await verifyUser(req);
+        const contextObj={};
+        if(req){
+
+            await verifyUser(req);
+            contextObj.email= req.email,
+            contextObj.loggedInUserId= req.loggedInUserId
+
+        }
+
+       
    //     console.log(`The context run every time!`);
-       return {
-           email: req.email,
-           loggedInUserId: req.loggedInUserId
-        } 
+       return contextObj;
     }
 });
 
@@ -44,7 +50,9 @@ app.use('/',(req,res,next)=>{
     res.send({message:'Hello'});
 })
 
-app.listen(PORT, ()=>{
+const httpserver = app.listen(PORT, ()=>{
     console.log(`The server is listening on port ${PORT}`);
     console.log( 'The graphql path is /graphql');
-})
+});
+
+apolloServer.installSubscriptionHandlers(httpserver);

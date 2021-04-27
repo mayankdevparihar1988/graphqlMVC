@@ -55,6 +55,10 @@ module.exports = gql`
        updatedAt:Date! 
     }
 
+    extend type Subsctiption{
+        userCreated: User
+    }
+
    
 
 

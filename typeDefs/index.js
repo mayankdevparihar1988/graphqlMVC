@@ -21,6 +21,10 @@ const typeDefs = gql`
         
     }
 
+    type Subsctiption{
+        dummy:String
+    }
+
 
 `;
 

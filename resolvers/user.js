@@ -8,6 +8,10 @@ const User = require("../database/models/user");
 const user = require("../database/models/user");
 const { isAuthenticated } = require("./middleware");
 const task = require("../database/models/task");
+const PubSub = require('../subscription');
+const {userEvents}  = require('../subscription/events');
+
+
 module.exports = {
   Query: {
     users: () => users,
@@ -63,12 +67,18 @@ module.exports = {
         const newUser = new User({ ...input, password: hashedPassword });
 
         result = await newUser.save();
+
+        PubSub.publish(userEvents.USER_CREATED, {
+          userCreated: result
+        });
+
+        return result;
       } catch (err) {
         console.log("Error occured in findOne ", err);
         throw err;
       }
 
-      return result;
+    
     },
 
     login: async (_, { input }) => {
@@ -103,6 +113,18 @@ module.exports = {
         throw error;
       }
     },
+  },
+
+  Subscription:{
+
+    userCreated: {
+
+      subscribe: ()=>{
+        PubSub.asyncIterator(userEvents.USER_CREATED);
+      }
+      
+    }
+
   },
 
   // Users contain tasks field resolver for User
